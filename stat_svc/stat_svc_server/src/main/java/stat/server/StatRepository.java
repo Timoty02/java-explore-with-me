@@ -17,6 +17,6 @@ public interface StatRepository extends JpaRepository<EndpointHit, Integer> {
     Integer countByUriAndTimestampBetween(String uri, LocalDateTime start, LocalDateTime end);
     @Query("SELECT COUNT (DISTINCT e.ip) FROM EndpointHit e WHERE e.uri = ?1 AND e.timestamp BETWEEN ?2 AND ?3")
     Integer countByUriAndTimestampBetweenDistinctIp(String uri, LocalDateTime start, LocalDateTime end);
-    @Query(value = "SELECT app FROM endpoint_hit WHERE uri = ?1 LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT app FROM endpoint_hits WHERE uri = ?1 LIMIT 1", nativeQuery = true)
     String findFirstAppByUri(String uri);
 }

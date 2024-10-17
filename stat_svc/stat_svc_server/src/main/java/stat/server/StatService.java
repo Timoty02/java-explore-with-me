@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -45,9 +46,11 @@ public class StatService {
                 hits = repository.countByUriAndTimestampBetween(uri, LocalDateTime.parse(start, formatter),
                         LocalDateTime.parse(end, formatter));
             }
+
             viewStat.setHits(hits);
             viewStats.add(viewStat);
         }
+        viewStats.sort((a, b) -> Integer.compare(b.getHits(), a.getHits()));
         return viewStats;
     }
 }

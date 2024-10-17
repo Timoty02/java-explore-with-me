@@ -1,14 +1,31 @@
 services:
   stat_svc:
+    build: stat_svc
+    image: explore-with-me-stat_svc
+    container_name: explore-with-me-stat_svc
     ports:
       - "9090:9090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stat_svc
+      - SPRING_DATASOURCE_USERNAME=stat_svc
+      - SPRING_DATASOURCE_PASSWORD=stat_svc
+      - TZ=Europe/Moscow
+    depends_on:
+      - stats-db
 
   stats-db:
     image: postgres:16.1
-
-  main_svc:
+    container_name: postgres
     ports:
-      - "8080:8080"
+      - "6541:5432"
+    environment:
+      - POSTGRES_PASSWORD=stat_svc
+      - POSTGRES_USER=stat_svc
+      - POSTGRES_DB=stat_svc
+      - TZ=Europe/Moscow
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
-  ewm-db:
-    image: postgres:16.1

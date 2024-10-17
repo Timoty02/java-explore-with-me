@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -17,10 +16,12 @@ import java.util.List;
 public class StatService {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final StatRepository repository;
+
     @Autowired
-    public StatService(StatRepository repository){
+    public StatService(StatRepository repository) {
         this.repository = repository;
     }
+
     public void hit(EndpointHitDto endpointHitDto) {
         log.info("hit: {}", endpointHitDto);
         EndpointHit endpointHit = EndpointHitMapper.toEndpointHit(endpointHitDto);
@@ -31,15 +32,15 @@ public class StatService {
     public List<ViewStats> stats(String start, String end, List<String> uris, Boolean unique) {
         log.info("getting stats");
         List<ViewStats> viewStats = new ArrayList<>();
-        if (uris == null ||uris.isEmpty()) {
+        if (uris == null || uris.isEmpty()) {
             uris = repository.findDistinctUris();
         }
-        for (String uri:uris) {
+        for (String uri : uris) {
             ViewStats viewStat = new ViewStats();
             viewStat.setUri(uri);
             viewStat.setApp(repository.findFirstAppByUri(uri));
             Integer hits;
-            if (unique){
+            if (unique) {
                 hits = repository.countByUriAndTimestampBetweenDistinctIp(uri, LocalDateTime.parse(start, formatter),
                         LocalDateTime.parse(end, formatter));
             } else {

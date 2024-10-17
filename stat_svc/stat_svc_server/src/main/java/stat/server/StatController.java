@@ -13,10 +13,12 @@ import java.util.List;
 @RequestMapping
 public class StatController {
     private final StatService service;
+
     @Autowired
-    public StatController(StatService service){
+    public StatController(StatService service) {
         this.service = service;
     }
+
     @PostMapping("/hit")
     public void hit(@RequestBody EndpointHitDto endpointHitDto) {
         log.info("endpoint hit");

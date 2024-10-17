@@ -1,12 +1,12 @@
 services:
-  stats-server:
+  stat_svc:
     ports:
       - "9090:9090"
 
   stats-db:
     image: postgres:16.1
 
-  ewm-service:
+  main_svc:
     ports:
       - "8080:8080"
 

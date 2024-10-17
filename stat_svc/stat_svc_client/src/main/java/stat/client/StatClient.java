@@ -15,20 +15,22 @@ import java.util.List;
 import java.util.Map;
 
 
-public class StatClient{
+public class StatClient {
     protected final RestTemplate rest;
+
     @Autowired
     public StatClient(@Value("${explore-with-me-stat_svc.url}") String serverUrl, RestTemplateBuilder builder) {
         this.rest = builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
-                        .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
-                        .build();
+                .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
+                .build();
 
     }
 
     public ResponseEntity<Object> hit(EndpointHitDto endpointHitDto) {
-        return makeAndSendRequest(HttpMethod.POST,"/hit",null, endpointHitDto);
+        return makeAndSendRequest(HttpMethod.POST, "/hit", null, endpointHitDto);
     }
+
     public ResponseEntity<Object> stats(String start, String end, String[] uris, Boolean unique) {
         Map<String, Object> parameters = Map.of(
                 "start", start,
@@ -36,8 +38,9 @@ public class StatClient{
                 "uris", uris,
                 "unique", unique
         );
-        return makeAndSendRequest( HttpMethod.GET, "/stats", parameters, null);
+        return makeAndSendRequest(HttpMethod.GET, "/stats", parameters, null);
     }
+
     private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable Map<String, Object> parameters, @Nullable T body) {
         HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
 

@@ -1,9 +1,6 @@
 package stat.server;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,13 +8,17 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+import static stat.server.EndpointHit.TABLE_NAME;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Entity
-@Table(name = "endpoint_hits")
+@Table(name = TABLE_NAME)
 public class EndpointHit {
+    @Transient
+    static final String TABLE_NAME = "endpoint_hits";
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     int id;

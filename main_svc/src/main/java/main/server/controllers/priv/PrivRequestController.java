@@ -1,4 +1,4 @@
-package main.server.controllers;
+package main.server.controllers.priv;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping
-public class UserController {
+@RequestMapping("/users")
+public class PrivRequestController {
 }

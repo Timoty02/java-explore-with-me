@@ -1,10 +1,11 @@
-package main.server.dao;
+package main.server.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import main.server.dao.Location;
 
 @Slf4j
 @Data

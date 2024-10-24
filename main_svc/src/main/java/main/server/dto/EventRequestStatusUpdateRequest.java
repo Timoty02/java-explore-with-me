@@ -1,4 +1,4 @@
-package main.server.dao;
+package main.server.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

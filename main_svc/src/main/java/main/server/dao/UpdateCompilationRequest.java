@@ -15,6 +15,6 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class UpdateCompilationRequest {
     List<Integer> events;
-    boolean pinned;
+    Boolean pinned;
     String title;
 }

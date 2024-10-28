@@ -59,4 +59,26 @@ public class CompilationService {
         log.info("Compilation updated: {}", compilationUp);
         return CompilationMapper.toCompilationDto(compilationUp);
     }
+
+    public List<CompilationDto> getCompilationsPub(Boolean pinned, Integer from, Integer size) {
+        log.info("Getting compilations");
+        List<Compilation> compilations;
+        if (pinned != null && pinned) {
+            compilations = compilationRepository.findAllByPinned(pinned).stream().toList();
+        } else {
+            compilations = compilationRepository.findAll().stream().toList();
+        }
+        if (from != null && size != null) {
+            compilations = compilations.stream().skip(from).limit(size).toList();
+        }
+        log.info("Found compilations: {}", compilations);
+        return compilations.stream().map(CompilationMapper::toCompilationDto).toList();
+    }
+
+    public CompilationDto getCompilationByIdPub(int compId) {
+        log.info("Getting compilation with id: {}", compId);
+        Compilation compilation = compilationRepository.findById(compId).orElseThrow();
+        log.info("Found compilation: {}", compilation);
+        return CompilationMapper.toCompilationDto(compilation);
+    }
 }

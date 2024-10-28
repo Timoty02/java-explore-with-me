@@ -12,6 +12,7 @@ import main.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -28,6 +29,12 @@ public class EventService {
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.requestRepository = requestRepository;
+    }
+    public EventFullDto  getEventByIdPub(int eventId) {
+        log.info("getEvent: {}", eventId);
+        Event event = eventRepository.findById(eventId).orElseThrow();
+        log.info("gotEvent: {}", event);
+        return EventMapper.toEventFullDto(event);
     }
     public List<EventShortDto> getEventsPriv(int userId, int from, int size){
         log.info("getEvents");
@@ -157,22 +164,34 @@ public class EventService {
         log.info("rejectedEventRequest: {}", requestsUp);
         return requestsUp.stream().map(RequestMapper::toDto).toList();
     }
-    /*public List<EventFullDto> getEvents(String text, List<Integer> categories, Boolean paid,
+    public List<EventShortDto> getEventsPub(String text, List<Integer> categories, Boolean paid,
                                         String rangeStart, String rangeEnd, Boolean onlyAvailable,
                                         String sort, int from, int size) {
         log.info("getEvents");
         List<Event> events = eventRepository.findAll().stream()
-                .filter(event -> text == null || event.getAnnotation().contains(text) || event.getDescription().contains(text))
+                .filter(event -> event.getState().equals("PUBLISHED"))
+                .filter(event -> text == null || event.getAnnotation().toLowerCase().contains(text) || event.getDescription().toLowerCase().contains(text))
                 .filter(event -> categories == null || categories.isEmpty() || categories.contains(event.getCategory().getId()))
-                .filter(event -> paid == null || event.getPaid() == paid)
-                .filter(event -> rangeStart == null || event.getEventDate().isAfter(rangeStart))
-                .filter(event -> rangeEnd == null || event.getEventDate().isBefore(rangeEnd))
+                .filter(event -> paid == null || event.isPaid() == paid)
+                .filter(event -> ((rangeStart == null && LocalDateTime.parse(event.getEventDate()).isAfter(LocalDateTime.now())) || LocalDateTime.parse(event.getEventDate()).isAfter(LocalDateTime.parse(rangeStart))))
+                .filter(event -> rangeEnd == null || LocalDateTime.parse(event.getEventDate()).isBefore(LocalDateTime.parse(rangeEnd)))
                 .filter(event -> !onlyAvailable || event.getParticipantLimit() == 0 || event.getParticipantLimit() > event.getConfirmedRequests())
                 .skip(from)
                 .limit(size)
+                .sorted((event1, event2) -> {
+                    if (sort == null) {
+                        return 0;
+                    }
+                    return switch (sort) {
+                        case "EVENT_DATE" -> event1.getEventDate().compareTo(event2.getEventDate());
+                        case "VIEWS" -> event1.getViews() - event2.getViews();
+                        default -> 0;
+                    };
+                })
                 .toList();
-        return events.stream().map(EventMapper::toEventFullDto).toList();
-    }*/
+        log.info("gotEvents: {}", events);
+        return events.stream().map(EventMapper::toEventShortDto).toList();
+    }
 
     public List<EventFullDto> getEventsAdmin(List<Integer> usersIds, List<String> states,
                                         List<Integer> categories, String rangeStart,

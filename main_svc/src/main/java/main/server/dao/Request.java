@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Data
 @NoArgsConstructor
@@ -15,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Table(name = "requests")
 public class Request {
-    String created;
+    String created = LocalDateTime.now().toString();
     @ManyToOne
     @JoinColumn(name = "event_id")
     Event event;

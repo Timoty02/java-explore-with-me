@@ -14,13 +14,13 @@ import main.server.dao.Location;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class UpdateEventUserRequest {
     String annotation;
-    int category;
+    Integer category;
     String description;
     String eventDate;
     Location location;
-    boolean paid;
-    int participantLimit;
-    boolean requestModeration;
+    Boolean paid;
+    Integer participantLimit;
+    Boolean requestModeration;
     String stateAction;
     String title;
 }

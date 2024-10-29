@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "requests")
 public class Request {
-    String created = LocalDateTime.now().toString();
+    LocalDateTime created = LocalDateTime.now();
     @ManyToOne
     @JoinColumn(name = "event_id")
     Event event;

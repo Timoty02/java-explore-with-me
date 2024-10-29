@@ -74,11 +74,11 @@ public class EventService {
             event.setDescription(updateEventUserRequest.getDescription());
         }
         if (updateEventUserRequest.getEventDate() != null) {
-            event.setEventDate(updateEventUserRequest.getEventDate());
+            event.setEventDate(LocalDateTime.parse(updateEventUserRequest.getEventDate(), Event.DATE_TIME_FORMATTER));
         }
         if (updateEventUserRequest.getLocation() != null) {
             event.setLocationLat(updateEventUserRequest.getLocation().getLat());
-            event.setLocationLng(updateEventUserRequest.getLocation().getLng());
+            event.setLocationLng(updateEventUserRequest.getLocation().getLon());
         }
         if (updateEventUserRequest.getPaid() != null) {
             event.setPaid(updateEventUserRequest.getPaid());
@@ -90,7 +90,11 @@ public class EventService {
             event.setRequestModeration(updateEventUserRequest.getRequestModeration());
         }
         if (updateEventUserRequest.getStateAction() != null) {
-            event.setState(updateEventUserRequest.getStateAction());
+            if (updateEventUserRequest.getStateAction().equals("SEND_TO_REVIEW")) {
+                event.setState("PENDING");
+            } else if (updateEventUserRequest.getStateAction().equals("CANCEL_REVIEW")) {
+                event.setState("CANCELED");
+            }
         }
         if (updateEventUserRequest.getTitle() != null) {
             event.setTitle(updateEventUserRequest.getTitle());
@@ -170,16 +174,16 @@ public class EventService {
         log.info("getEvents");
         List<Event> events = eventRepository.findAll().stream()
                 .filter(event -> event.getState().equals("PUBLISHED"))
-                .filter(event -> text == null || event.getAnnotation().toLowerCase().contains(text) || event.getDescription().toLowerCase().contains(text))
-                .filter(event -> categories == null || categories.isEmpty() || categories.contains(event.getCategory().getId()))
+                .filter(event -> text == null || text.equals("0") || event.getAnnotation().toLowerCase().contains(text) || event.getDescription().toLowerCase().contains(text))
+                .filter(event -> categories == null || categories.isEmpty() || categories.get(0) == 0|| categories.contains(event.getCategory().getId()))
                 .filter(event -> paid == null || event.isPaid() == paid)
-                .filter(event -> ((rangeStart == null && LocalDateTime.parse(event.getEventDate()).isAfter(LocalDateTime.now())) || LocalDateTime.parse(event.getEventDate()).isAfter(LocalDateTime.parse(rangeStart))))
-                .filter(event -> rangeEnd == null || LocalDateTime.parse(event.getEventDate()).isBefore(LocalDateTime.parse(rangeEnd)))
+                .filter(event -> ((rangeStart == null && event.getEventDate().isAfter(LocalDateTime.now())) || event.getEventDate().isAfter(LocalDateTime.parse(rangeStart, Event.DATE_TIME_FORMATTER))))
+                .filter(event -> rangeEnd == null || event.getEventDate().isBefore(LocalDateTime.parse(rangeEnd, Event.DATE_TIME_FORMATTER)))
                 .filter(event -> !onlyAvailable || event.getParticipantLimit() == 0 || event.getParticipantLimit() > event.getConfirmedRequests())
                 .skip(from)
                 .limit(size)
                 .sorted((event1, event2) -> {
-                    if (sort == null) {
+                    if (sort == null || sort.equals("0")) {
                         return 0;
                     }
                     return switch (sort) {
@@ -196,7 +200,8 @@ public class EventService {
     public List<EventFullDto> getEventsAdmin(List<Integer> usersIds, List<String> states,
                                         List<Integer> categories, String rangeStart,
                                         String rangeEnd, int from, int size) {
-        log.info("getEvents");
+        log.info("getEventsAdmin: usersIds={}, states={}, categories={}, rangeStart={}, rangeEnd={}, from={}, size={}",
+                usersIds, states, categories, rangeStart, rangeEnd, from, size);
         if  (usersIds == null || usersIds.isEmpty() || usersIds.get(0) == 0) {
             usersIds = userRepository.findAll().stream().map(User::getId).toList();
         }
@@ -207,8 +212,10 @@ public class EventService {
         List<Integer> finalCategories = categories;
         List<Event> events = eventRepository.findAll().stream()
                 .filter(event -> finalUsersIds.contains(event.getInitiator().getId()))
-                .filter(event -> states == null || states.isEmpty() || states.contains(event.getState().toString()))
+                .filter(event -> states == null || states.isEmpty() || states.contains(event.getState()))
                 .filter(event -> finalCategories.contains(event.getCategory().getId()))
+                .filter(event -> rangeStart == null || event.getEventDate().isAfter(LocalDateTime.parse(rangeStart, Event.DATE_TIME_FORMATTER)))
+                .filter(event -> rangeEnd == null || event.getEventDate().isBefore(LocalDateTime.parse(rangeEnd, Event.DATE_TIME_FORMATTER)))
                 .skip(from)
                 .limit(size)
                 .toList();
@@ -228,12 +235,12 @@ public class EventService {
             event.setDescription(updateEventAdminRequest.getDescription());
         }
         if (updateEventAdminRequest.getEventDate() != null) {
-            event.setEventDate(updateEventAdminRequest.getEventDate());
+            event.setEventDate(LocalDateTime.parse(updateEventAdminRequest.getEventDate(), Event.DATE_TIME_FORMATTER));
         }
         if (updateEventAdminRequest.getLocation() != null) {
             Location location = updateEventAdminRequest.getLocation();
             event.setLocationLat(location.getLat());
-            event.setLocationLng(location.getLng());
+            event.setLocationLng(location.getLon());
         }
         if (updateEventAdminRequest.getPaid() != null) {
             event.setPaid(updateEventAdminRequest.getPaid());
@@ -245,7 +252,11 @@ public class EventService {
             event.setRequestModeration(updateEventAdminRequest.getRequestModeration());
         }
         if (updateEventAdminRequest.getStateAction() != null) {
-            event.setState(updateEventAdminRequest.getStateAction());
+            if (updateEventAdminRequest.getStateAction().equals("PUBLISH_EVENT")) {
+                event.setState("PUBLISHED");
+            } else if (updateEventAdminRequest.getStateAction().equals("REJECT_EVENT")) {
+                event.setState("CANCELED");
+            }
         }
         if (updateEventAdminRequest.getTitle() != null) {
             event.setTitle(updateEventAdminRequest.getTitle());

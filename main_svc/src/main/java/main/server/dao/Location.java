@@ -13,5 +13,5 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Location {
     float lat;
-    float lng;
+    float lon;
 }

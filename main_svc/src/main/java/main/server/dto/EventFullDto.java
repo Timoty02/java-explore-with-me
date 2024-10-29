@@ -22,7 +22,7 @@ public class EventFullDto {
     int id;
     UserShortDto initiator;
     Location location;
-    boolean paid;
+    Boolean paid;
     int participantLimit;
     String publishedOn;
     boolean requestModeration;

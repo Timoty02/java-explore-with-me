@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 @Slf4j
 @Data
@@ -16,14 +19,15 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Table(name = "events")
 public class Event {
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     String annotation;
     @ManyToOne
     @JoinColumn(name = "category_id")
     Category category;
     int confirmedRequests;
-    String createdOn;
+    LocalDateTime createdOn = LocalDateTime.now();
     String description;
-    String eventDate;
+    LocalDateTime eventDate;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
@@ -36,7 +40,7 @@ public class Event {
     float locationLng;
     boolean paid;
     int participantLimit;
-    String publishedOn;
+    LocalDateTime publishedOn;
     boolean requestModeration;
     String state;
     String title;
@@ -46,7 +50,7 @@ public class Event {
                  int participantLimit, boolean requestModeration, String title) {
         this.annotation = annotation;
         this.description = description;
-        this.eventDate = eventDate;
+        this.eventDate = LocalDateTime.parse(eventDate, DATE_TIME_FORMATTER);
         this.locationLat = lat;
         this.locationLng = lng;
         this.paid = paid;

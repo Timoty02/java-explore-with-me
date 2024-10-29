@@ -27,6 +27,7 @@ public class PrivRequestController {
     }
 
     @PostMapping("/{userId}/requests")
+    @ResponseStatus(value = org.springframework.http.HttpStatus.CREATED)
     public ParticipationRequestDto addUserRequest(@PathVariable int userId, @RequestParam int eventId) {
         log.info("Adding request for event: {}, from user: {}", eventId, userId);
         ParticipationRequestDto request = requestService.addRequest(userId, eventId);

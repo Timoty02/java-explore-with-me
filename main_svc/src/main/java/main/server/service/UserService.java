@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import main.server.dao.NewUserRequest;
 import main.server.dao.User;
 import main.server.dto.UserDto;
+import main.server.exception.ConflictException;
+import main.server.exception.NotFoundException;
 import main.server.mapper.UserMapper;
 import main.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +27,13 @@ public class UserService {
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        User userUp = userRepository.save(user);
-        log.info("user saved: {}", userUp);
-        return UserMapper.toUserDto(userUp);
+        try {
+            User userUp = userRepository.save(user);
+            log.info("user saved: {}", userUp);
+            return UserMapper.toUserDto(userUp);
+        } catch (Exception e) {
+            throw new ConflictException(e.getMessage());
+        }
     }
 
     public UserDto getUser(int id) {
@@ -38,6 +44,9 @@ public class UserService {
 
     public void deleteUser(int id) {
         log.info("deleteUser: {}", id);
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("User with id=" + id + " was not found");
+        }
         userRepository.deleteById(id);
     }
 

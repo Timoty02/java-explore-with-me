@@ -19,7 +19,7 @@ public class PubCompilationController {
     }
 
     @GetMapping
-    public List<CompilationDto> getCompilations(@RequestParam Boolean pinned, @RequestParam(defaultValue = "0") int from,
+    public List<CompilationDto> getCompilations(@RequestParam(required = false) Boolean pinned, @RequestParam(defaultValue = "0") int from,
                                                 @RequestParam(defaultValue = "10") int size) {
         log.info("Getting compilations with pinned: {}, from: {}, size: {}", pinned, from, size);
         return compilationService.getCompilationsPub(pinned, from, size);

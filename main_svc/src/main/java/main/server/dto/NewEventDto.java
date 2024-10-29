@@ -1,5 +1,8 @@
 package main.server.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,16 +13,42 @@ import main.server.dao.Location;
 @Slf4j
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class NewEventDto {
+
     String annotation;
     int category;
+
     String description;
     String eventDate;
     Location location;
     boolean paid;
+
     int participantLimit;
     boolean requestModeration;
     String title;
+
+    public NewEventDto(String annotation, int category, String description, String eventDate, Location location, boolean paid, int participantLimit, boolean requestModeration, String title) {
+        this.annotation = annotation;
+        this.category = category;
+        this.description = description;
+        this.eventDate = eventDate;
+        this.location = location;
+        this.paid = paid;
+        this.participantLimit = participantLimit;
+        this.requestModeration = requestModeration;
+        this.title = title;
+        validate();
+    }
+    private void validate() {
+        if (annotation == null || annotation.isBlank()) {
+            throw new IllegalArgumentException("Annotation is required");
+        }
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Description is required");
+        }
+        if (participantLimit < 0) {
+            throw new IllegalArgumentException("Participant limit must be non-negative");
+        }
+    }
 }

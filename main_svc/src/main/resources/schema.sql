@@ -54,7 +54,7 @@ BEGIN
     SET confirmed_requests = (
         SELECT COUNT(*)
         FROM requests
-        WHERE event_id = NEW.event_id AND status = ''approved''
+        WHERE event_id = NEW.event_id AND status = ''CONFIRMED''
     )
     WHERE id = NEW.event_id;
 

@@ -3,6 +3,8 @@ package main.server.service;
 import lombok.extern.slf4j.Slf4j;
 import main.server.dao.*;
 import main.server.dto.*;
+import main.server.exception.ConflictException;
+import main.server.exception.NotFoundException;
 import main.server.mapper.EventMapper;
 import main.server.mapper.RequestMapper;
 import main.server.repository.CategoryRepository;
@@ -32,7 +34,7 @@ public class EventService {
     }
     public EventFullDto  getEventByIdPub(int eventId) {
         log.info("getEvent: {}", eventId);
-        Event event = eventRepository.findById(eventId).orElseThrow();
+        Event event = eventRepository.findById(eventId).orElseThrow( () -> new NotFoundException("Event with id=" + eventId + " was not found"));
         log.info("gotEvent: {}", event);
         return EventMapper.toEventFullDto(event);
     }
@@ -47,23 +49,33 @@ public class EventService {
     }
     public EventFullDto createEventPriv(int userId, NewEventDto newEventDto) {
         log.info("createEvent: {}", newEventDto);
+        if (LocalDateTime.parse(newEventDto.getEventDate(), Event.DATE_TIME_FORMATTER).isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new ConflictException("Event date must be at least 2 hours from now");
+        }
         Event event = EventMapper.toEvent(newEventDto);
         event.setInitiator(userRepository.findById(userId).orElseThrow());
         event.setCategory(categoryRepository.findById(newEventDto.getCategory()).orElseThrow());
         event.setState("PENDING");
-        Event eventUp = eventRepository.save(event);
-        log.info("createdEvent: {}", eventUp);
-        return EventMapper.toEventFullDto(eventUp);
+        try {
+            Event eventUp = eventRepository.save(event);
+            log.info("createdEvent: {}", eventUp);
+            return EventMapper.toEventFullDto(eventUp);
+        } catch (Exception e) {
+            throw new ConflictException(e.getMessage());
+        }
     }
     public EventFullDto getEventPriv(int userId, int eventId) {
         log.info("getEvent: {}", eventId);
-        Event event = eventRepository.findById(eventId).orElseThrow();
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
         log.info("gotEvent: {}", event);
         return EventMapper.toEventFullDto(event);
     }
     public EventFullDto updateEventPriv(int userId, int eventId, UpdateEventUserRequest  updateEventUserRequest) {
         log.info("updateEvent: {}", eventId);
-        Event event = eventRepository.findById(eventId).orElseThrow();
+        Event event = eventRepository.findById(eventId).orElseThrow( () -> new NotFoundException("Event with id=" + eventId + " was not found") );
+        if (!event.getState().equals("PENDING") && !event.getState().equals("CANCELED")) {
+            throw new ConflictException("Only pending or canceled events can be changed");
+        }
         if (updateEventUserRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventUserRequest.getAnnotation());
         }
@@ -105,12 +117,14 @@ public class EventService {
     }
     public List<ParticipationRequestDto> getEventRequestsPriv(int userId, int eventId){
         log.info("getEventRequests: {}", eventId);
+        Event event = eventRepository.findById(eventId).orElseThrow( () -> new NotFoundException("Event with id=" + eventId + " was not found") );
         List<Request> requests = requestRepository.findAllByEventId(eventId).stream().toList();
         log.info("gotEventRequests: {}", requests);
         return requests.stream().map(RequestMapper::toDto).toList();
     }
     public EventRequestStatusUpdateResult updateEventRequestsPriv(int userId, int eventId, EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest){
         log.info("updateEventRequests: {}", eventRequestStatusUpdateRequest);
+        Event event = eventRepository.findById(eventId).orElseThrow( () -> new NotFoundException("Event with id=" + eventId + " was not found") );
         EventRequestStatusUpdateResult eventRequestStatusUpdateResult = new EventRequestStatusUpdateResult();
         List<ParticipationRequestDto> participationRequestDtos = null;
         if (eventRequestStatusUpdateRequest.getStatus().equals("CONFIRMED")) {
@@ -132,11 +146,11 @@ public class EventService {
         log.info("confirmEventRequests: {}", reqIds);
         Event event = eventRepository.findById(eventId).orElseThrow();
         if (event.getParticipantLimit() == event.getConfirmedRequests()) {
-            throw new RuntimeException("Event is full");
+            throw new ConflictException("Participant limit has been reached");
         }
         List<Request> requests = requestRepository.findAllById(reqIds);
         if (requests.stream().anyMatch(request -> !request.getStatus().equals("PENDING"))) {
-            throw new RuntimeException("Request status is not PENDING");
+            throw new ConflictException("Request status is not PENDING");
         }
         int requestsLeft = event.getParticipantLimit() - event.getConfirmedRequests();
         for (Request request : requests) {
@@ -159,7 +173,7 @@ public class EventService {
         Event event = eventRepository.findById(eventId).orElseThrow();
         List<Request> requests = requestRepository.findAllById(reqIds);
         if (requests.stream().anyMatch(request -> !request.getStatus().equals("PENDING"))) {
-            throw new RuntimeException("Request status is not PENDING");
+            throw new ConflictException("Request status is not PENDING");
         }
         for (Request request : requests) {
             request.setStatus("REJECTED");
@@ -171,15 +185,16 @@ public class EventService {
     public List<EventShortDto> getEventsPub(String text, List<Integer> categories, Boolean paid,
                                         String rangeStart, String rangeEnd, Boolean onlyAvailable,
                                         String sort, int from, int size) {
-        log.info("getEvents");
+        log.info("getEvents: text={}, categories={}, paid={}, rangeStart={}, rangeEnd={}, onlyAvailable={}, sort={}, from={}, size={}",
+                text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         List<Event> events = eventRepository.findAll().stream()
                 .filter(event -> event.getState().equals("PUBLISHED"))
-                .filter(event -> text == null || text.equals("0") || event.getAnnotation().toLowerCase().contains(text) || event.getDescription().toLowerCase().contains(text))
-                .filter(event -> categories == null || categories.isEmpty() || categories.get(0) == 0|| categories.contains(event.getCategory().getId()))
+                .filter(event -> text == null || text.equals("0") || event.getAnnotation().toLowerCase().contains(text.toLowerCase()) || event.getDescription().toLowerCase().contains(text.toLowerCase()))
+                .filter(event -> categories == null || categories.isEmpty() || categories.get(0) == 0 || categories.contains(event.getCategory().getId()))
                 .filter(event -> paid == null || event.isPaid() == paid)
                 .filter(event -> ((rangeStart == null && event.getEventDate().isAfter(LocalDateTime.now())) || event.getEventDate().isAfter(LocalDateTime.parse(rangeStart, Event.DATE_TIME_FORMATTER))))
                 .filter(event -> rangeEnd == null || event.getEventDate().isBefore(LocalDateTime.parse(rangeEnd, Event.DATE_TIME_FORMATTER)))
-                .filter(event -> !onlyAvailable || event.getParticipantLimit() == 0 || event.getParticipantLimit() > event.getConfirmedRequests())
+                .filter(event -> onlyAvailable == null || onlyAvailable.equals(false) || event.getParticipantLimit() == 0 || event.getParticipantLimit() > event.getConfirmedRequests())
                 .skip(from)
                 .limit(size)
                 .sorted((event1, event2) -> {
@@ -224,7 +239,7 @@ public class EventService {
 
     public EventFullDto updateEventAdmin(int eventId, UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("updateEventAdmin: {}", eventId);
-        Event event = eventRepository.findById(eventId).orElseThrow();
+        Event event = eventRepository.findById(eventId).orElseThrow( () -> new NotFoundException("Event with id=" + eventId + " was not found"));
         if (updateEventAdminRequest.getAnnotation() != null) {
             event.setAnnotation(updateEventAdminRequest.getAnnotation());
         }
@@ -233,9 +248,6 @@ public class EventService {
         }
         if (updateEventAdminRequest.getDescription() != null) {
             event.setDescription(updateEventAdminRequest.getDescription());
-        }
-        if (updateEventAdminRequest.getEventDate() != null) {
-            event.setEventDate(LocalDateTime.parse(updateEventAdminRequest.getEventDate(), Event.DATE_TIME_FORMATTER));
         }
         if (updateEventAdminRequest.getLocation() != null) {
             Location location = updateEventAdminRequest.getLocation();
@@ -253,9 +265,22 @@ public class EventService {
         }
         if (updateEventAdminRequest.getStateAction() != null) {
             if (updateEventAdminRequest.getStateAction().equals("PUBLISH_EVENT")) {
+                if (event.getState().equals("PUBLISHED") || event.getState().equals("CANCELED")) {
+                    throw new ConflictException("Event is already published or canceled");
+                }
                 event.setState("PUBLISHED");
             } else if (updateEventAdminRequest.getStateAction().equals("REJECT_EVENT")) {
+                if (event.getState().equals("PUBLISHED")) {
+                    throw new ConflictException("Event is already published");
+                }
                 event.setState("CANCELED");
+            }
+        }
+        if (updateEventAdminRequest.getEventDate() != null) {
+            if (LocalDateTime.parse(updateEventAdminRequest.getEventDate(), Event.DATE_TIME_FORMATTER).isBefore(event.getEventDate().plusHours(1))){
+                event.setEventDate(LocalDateTime.parse(updateEventAdminRequest.getEventDate(), Event.DATE_TIME_FORMATTER));
+            } else {
+                throw new ConflictException("Event date must be at least 1 hour after publication");
             }
         }
         if (updateEventAdminRequest.getTitle() != null) {

@@ -58,4 +58,11 @@ public class Event {
         this.requestModeration = requestModeration;
         this.title = title;
     }
+
+    public void setState(String state) {
+        this.state = state;
+        if (state.equals("PUBLISHED")) {
+            this.publishedOn = LocalDateTime.now();
+        }
+    }
 }

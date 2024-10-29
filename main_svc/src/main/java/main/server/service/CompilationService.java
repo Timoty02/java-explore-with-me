@@ -6,6 +6,8 @@ import main.server.dao.Event;
 import main.server.dao.UpdateCompilationRequest;
 import main.server.dto.CompilationDto;
 import main.server.dto.NewCompilationDto;
+import main.server.exception.ConflictException;
+import main.server.exception.NotFoundException;
 import main.server.mapper.CompilationMapper;
 import main.server.repository.CompilationRepository;
 import main.server.repository.EventRepository;
@@ -26,6 +28,8 @@ public class CompilationService {
     }
     public void deleteCompilationAdmin(int compId) {
         log.info("Deleting compilation with id: {}", compId);
+        compilationRepository.findById(compId).orElseThrow(() ->
+                new NotFoundException("Compilation with id=" + compId + " was not found"));
         compilationRepository.deleteById(compId);
         log.info("Compilation deleted");
     }
@@ -37,14 +41,19 @@ public class CompilationService {
             List<Event> events = eventRepository.findAllById(newCompilationDto.getEvents());
             compilation.setEvents(events);
         }
-        Compilation compilationUp = compilationRepository.save(compilation);
-        log.info("Compilation added: {}", compilationUp);
-        return CompilationMapper.toCompilationDto(compilationUp);
+        try {
+            Compilation compilationUp = compilationRepository.save(compilation);
+            log.info("Compilation added: {}", compilationUp);
+            return CompilationMapper.toCompilationDto(compilationUp);
+        } catch (Exception e) {
+            throw new ConflictException(e.getMessage());
+        }
     }
 
     public CompilationDto updateCompilationAdmin(int compId, UpdateCompilationRequest updateCompilationRequest) {
         log.info("Updating compilation with id: {}", compId);
-        Compilation compilation = compilationRepository.findById(compId).orElseThrow();
+        Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->
+                new NotFoundException("Compilation with id=" + compId + " was not found"));
         if (updateCompilationRequest.getEvents() != null) {
             List<Event> events = eventRepository.findAllById(updateCompilationRequest.getEvents());
             compilation.setEvents(events);
@@ -77,7 +86,8 @@ public class CompilationService {
 
     public CompilationDto getCompilationByIdPub(int compId) {
         log.info("Getting compilation with id: {}", compId);
-        Compilation compilation = compilationRepository.findById(compId).orElseThrow();
+        Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->
+                new NotFoundException("Compilation with id=" + compId + " was not found"));
         log.info("Found compilation: {}", compilation);
         return CompilationMapper.toCompilationDto(compilation);
     }

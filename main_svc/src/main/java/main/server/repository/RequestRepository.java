@@ -11,4 +11,6 @@ public interface RequestRepository extends JpaRepository<Request, Integer> {
     List<Request> findAllByEventId(int eventId);
     @Query("select r from Request r where r.requester.id = ?1")
     List<Request> findAllByRequesterId(int userId);
+
+    boolean existsByEventIdAndRequesterId(int eventId, int userId);
 }

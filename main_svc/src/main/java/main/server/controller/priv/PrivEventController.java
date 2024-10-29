@@ -1,9 +1,11 @@
 package main.server.controller.priv;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import main.server.dao.EventRequestStatusUpdateResult;
 import main.server.dto.*;
 import main.server.service.EventService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/users")
+@Validated
 public class PrivEventController {
     private final EventService eventService;
 
@@ -47,7 +50,7 @@ public class PrivEventController {
 
     @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto updateUserEventById(@PathVariable int userId, @PathVariable int eventId,
-                                      @RequestBody UpdateEventUserRequest newEventDto) {
+                                            @RequestBody UpdateEventUserRequest newEventDto) {
         log.info("updateUserEventById: userId={}, eventId={}, newEventDto={}", userId, eventId, newEventDto);
         EventFullDto eventFullDto = eventService.updateEventPriv(userId, eventId, newEventDto);
         log.info("updateUserEventById: eventFullDto={}", eventFullDto);

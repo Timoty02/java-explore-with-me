@@ -26,8 +26,8 @@ public class PubCompilationController {
         return compilationService.getCompilationsPub(pinned, from, size);
     }
 
-    @GetMapping("/{compId}")
-    public CompilationDto getCompilationById(@PathVariable int compId) {
+    @GetMapping("/{comp-id}")
+    public CompilationDto getCompilationById(@PathVariable("comp-id") int compId) {
         log.info("Getting compilation by id: {}", compId);
         CompilationDto compilationDto = compilationService.getCompilationByIdPub(compId);
         log.info("Compilation found: {}", compilationDto);

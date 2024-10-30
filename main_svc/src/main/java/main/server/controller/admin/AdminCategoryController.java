@@ -28,16 +28,16 @@ public class AdminCategoryController {
         return categoryDto;
     }
 
-    @DeleteMapping("/{catId}")
+    @DeleteMapping("/{cat-Id}")
     @ResponseStatus(code = org.springframework.http.HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable int catId) {
+    public void deleteCategory(@PathVariable("cat-id") int catId) {
         log.info("Deleting category with id: {}", catId);
         categoryService.deleteCategoryAdmin(catId);
         log.info("Category deleted");
     }
 
-    @PatchMapping("/{catId}")
-    public CategoryDto updateCategory(@PathVariable int catId, @RequestBody CategoryDto newCategoryDto) {
+    @PatchMapping("/{cat-id}")
+    public CategoryDto updateCategory(@PathVariable("cat-id") int catId, @RequestBody CategoryDto newCategoryDto) {
         log.info("Updating category with id: {}", catId);
         newCategoryDto.validate();
         CategoryDto categoryDto = categoryService.updateCategoryAdmin(catId, newCategoryDto);

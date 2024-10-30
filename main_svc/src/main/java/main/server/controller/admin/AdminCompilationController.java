@@ -29,9 +29,9 @@ public class AdminCompilationController {
         return compilationDto;
     }
 
-    @DeleteMapping("/{compId}")
+    @DeleteMapping("/{comp-id}")
     @ResponseStatus(code = org.springframework.http.HttpStatus.NO_CONTENT)
-    public void deleteCompilation(@PathVariable int compId) {
+    public void deleteCompilation(@PathVariable("comp-id") int compId) {
         log.info("deleteCompilation");
         compilationService.deleteCompilationAdmin(compId);
         log.info("deletedCompilation");

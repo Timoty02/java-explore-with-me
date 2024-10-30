@@ -28,8 +28,8 @@ public class PubCategoryController {
         return categories;
     }
 
-    @GetMapping("/{catId}")
-    public CategoryDto getCategoryById(@PathVariable int catId) {
+    @GetMapping("/{cat-id}")
+    public CategoryDto getCategoryById(@PathVariable("cat-id") int catId) {
         log.info("Getting category by id: {}", catId);
         CategoryDto categoryDto = categoryService.getCategoryByIdPub(catId);
         log.info("Category found: {}", categoryDto);

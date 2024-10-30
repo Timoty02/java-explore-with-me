@@ -39,9 +39,9 @@ public class AdminUserController {
         return userDto;
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{user-id}")
     @ResponseStatus(code = org.springframework.http.HttpStatus.NO_CONTENT)
-    public String deleteUser(@PathVariable int userId) {
+    public String deleteUser(@PathVariable("user-id") int userId) {
         log.info("deleteUser with userId:{}", userId);
         userService.deleteUser(userId);
         return "deleteUser";

@@ -4,7 +4,6 @@ import main.server.dao.Event;
 import main.server.dto.ApiError;
 import main.server.exception.ConflictException;
 import main.server.exception.NotFoundException;
-import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -15,6 +15,7 @@ public class ErrorHandler {
     public Map<String, String> handleException(final RuntimeException e) {
         return Map.of("error", e.getMessage());
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleException(final IllegalArgumentException e) {

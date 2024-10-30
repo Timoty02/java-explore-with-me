@@ -22,6 +22,7 @@ public class AdminCompilationController {
     @ResponseStatus(code = org.springframework.http.HttpStatus.CREATED)
     public CompilationDto createCompilation(@RequestBody NewCompilationDto  newCompilationDto) {
         log.info("createCompilation:{}", newCompilationDto);
+        newCompilationDto.validate();
         CompilationDto compilationDto = compilationService.addCompilationAdmin(newCompilationDto);
         log.info("createdCompilation:{}", compilationDto);
         return compilationDto;
@@ -38,6 +39,7 @@ public class AdminCompilationController {
     @PatchMapping("/{compId}")
     public CompilationDto updateCompilation(@PathVariable int compId, @RequestBody UpdateCompilationRequest updateCompilationRequest) {
         log.info("updateCompilation:{}", updateCompilationRequest);
+        updateCompilationRequest.validate();
         CompilationDto compilationDto = compilationService.updateCompilationAdmin(compId, updateCompilationRequest);
         log.info("updatedCompilation:{}", compilationDto);
         return compilationDto;

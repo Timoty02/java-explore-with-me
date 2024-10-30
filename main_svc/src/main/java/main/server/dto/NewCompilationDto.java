@@ -17,6 +17,11 @@ import java.util.List;
 public class NewCompilationDto {
     List<Integer> events;
     boolean pinned;
-    @Size(min = 1, max = 50)
     String title;
+
+    public void validate(){
+        if (title == null || title.isBlank() || title.length() > 50){
+            throw new IllegalArgumentException("Title is not valid");
+        }
+    }
 }

@@ -19,6 +19,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String name;
+
     public Category(String name) {
         this.name = name;
     }

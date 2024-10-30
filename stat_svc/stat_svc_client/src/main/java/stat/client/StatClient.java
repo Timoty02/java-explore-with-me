@@ -20,7 +20,7 @@ public class StatClient {
     protected final RestTemplate rest;
 
     @Autowired
-    public StatClient(@Value("${explore-with-me-stat_svc.url}") String serverUrl, RestTemplateBuilder builder) {
+    public StatClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
         this.rest = builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
                 .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())

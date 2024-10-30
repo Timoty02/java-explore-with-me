@@ -1,7 +1,7 @@
 package main.server.service;
 
 import lombok.extern.slf4j.Slf4j;
-import main.server.dao.NewUserRequest;
+import main.server.dto.NewUserRequest;
 import main.server.dao.User;
 import main.server.dto.UserDto;
 import main.server.exception.ConflictException;
@@ -52,7 +52,12 @@ public class UserService {
 
     public List<UserDto> getUsers(List<Integer> ids, int from, int size) {
         log.info("getUsers");
-        List<User> users = userRepository.findAllById(ids).stream().skip(from).limit(size).toList();
+        List<User> users;
+        if (ids == null) {
+            users = userRepository.findAll().stream().skip(from).limit(size).toList();
+        } else {
+            users = userRepository.findAllById(ids);
+        }
         return users.stream().map(UserMapper::toUserDto).collect(Collectors.toList());
     }
 }

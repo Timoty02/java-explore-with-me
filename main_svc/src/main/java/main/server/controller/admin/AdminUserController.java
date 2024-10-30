@@ -1,7 +1,7 @@
 package main.server.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
-import main.server.dao.NewUserRequest;
+import main.server.dto.NewUserRequest;
 import main.server.dto.UserDto;
 import main.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class AdminUserController {
         this.userService = userService;
     }
     @GetMapping
-    public List<UserDto> getUsers(@RequestParam List<Integer> ids, @RequestParam(defaultValue = "0") int from,
+    public List<UserDto> getUsers(@RequestParam(required = false) List<Integer> ids, @RequestParam(defaultValue = "0") int from,
                                   @RequestParam(defaultValue = "10") int size) {
         log.info("getUsers");
         List<UserDto> users = userService.getUsers(ids, from, size);
@@ -31,6 +31,7 @@ public class AdminUserController {
     @ResponseStatus(code = org.springframework.http.HttpStatus.CREATED)
     public UserDto createUser(@RequestBody NewUserRequest request) {
         log.info("createUser:{}",request);
+        request.validate();
         UserDto userDto = userService.addUser(request);
         log.info("userDto:{}", userDto);
         return userDto;

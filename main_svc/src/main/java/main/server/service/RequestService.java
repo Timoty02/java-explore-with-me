@@ -50,7 +50,7 @@ public class RequestService {
         if  (!request.getEvent().getState().equals("PUBLISHED")) {
             throw new ConflictException("Event is not PUBLISHED");
         }
-        if  (request.getEvent().getParticipantLimit() <= request.getEvent().getConfirmedRequests()) {
+        if  (request.getEvent().getParticipantLimit() != 0 && request.getEvent().getParticipantLimit() <= request.getEvent().getConfirmedRequests()) {
             throw new ConflictException("Participant limit has been reached");
         }
         if  (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
@@ -59,7 +59,7 @@ public class RequestService {
         if  (request.getEvent().getInitiator().getId() == userId) {
             throw new ConflictException("Initiator cannot add request to own event");
         }
-        if  (request.getEvent().isRequestModeration()) {
+        if  (request.getEvent().isRequestModeration() && request.getEvent().getParticipantLimit() != 0) {
             request.setStatus("PENDING");
         } else {
             request.setStatus("CONFIRMED");

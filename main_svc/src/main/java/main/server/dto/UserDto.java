@@ -17,6 +17,5 @@ public class UserDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     int id;
     String name;
-    @Email
     String email;
 }

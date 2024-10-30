@@ -1,7 +1,7 @@
 package main.server.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
-import main.server.dao.UpdateCompilationRequest;
+import main.server.dto.UpdateCompilationRequest;
 import main.server.dto.CompilationDto;
 import main.server.dto.NewCompilationDto;
 import main.server.service.CompilationService;

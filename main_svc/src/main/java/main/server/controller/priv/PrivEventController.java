@@ -1,8 +1,7 @@
 package main.server.controller.priv;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import main.server.dao.EventRequestStatusUpdateResult;
+import main.server.dto.EventRequestStatusUpdateResult;
 import main.server.dto.*;
 import main.server.service.EventService;
 import org.springframework.validation.annotation.Validated;

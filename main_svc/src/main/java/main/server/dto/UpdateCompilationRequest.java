@@ -1,11 +1,10 @@
-package main.server.dao;
+package main.server.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import main.server.dto.ParticipationRequestDto;
 
 import java.util.List;
 
@@ -14,7 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class EventRequestStatusUpdateResult {
-    List<ParticipationRequestDto> confirmedRequests;
-    List<ParticipationRequestDto> rejectedRequests;
+public class UpdateCompilationRequest {
+    List<Integer> events;
+    Boolean pinned;
+    String title;
 }

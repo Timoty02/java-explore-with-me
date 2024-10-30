@@ -69,10 +69,10 @@ public class CategoryService {
         }
     }
 
-    public List<CategoryDto> getCategoriesPub() {
+    public List<CategoryDto> getCategoriesPub(int from, int size) {
         log.info("Getting all categories");
-        List<Category> categories = categoryRepository.findAll();
-        log.info("Found {} categories", categories.size());
+        List<Category> categories = categoryRepository.findAll().stream().skip(from).limit(size).toList();
+        log.info("Found {} categories", categories);
         return categories.stream().map(CategoryMapper::toCategoryDto).collect(Collectors.toList());
     }
     public CategoryDto getCategoryByIdPub(int catId) {

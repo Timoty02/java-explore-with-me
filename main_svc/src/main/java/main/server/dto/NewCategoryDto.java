@@ -13,6 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class NewCategoryDto {
-    @Size(min = 1, max = 50)
     String name;
+
+    public void validate(){
+        if (name == null || name.isBlank() || name.length() > 50) {
+            throw new IllegalArgumentException("Name is not valid");
+        }
+    }
 }

@@ -21,6 +21,7 @@ public class AdminCategoryController {
     @ResponseStatus(code = org.springframework.http.HttpStatus.CREATED)
     public CategoryDto addCategory(@RequestBody NewCategoryDto newCategoryDto) {
         log.info("Adding new category: {}", newCategoryDto);
+        newCategoryDto.validate();
         CategoryDto categoryDto = categoryService.addCategoryAdmin(newCategoryDto);
         log.info("Category added: {}", categoryDto);
         return categoryDto;
@@ -37,6 +38,7 @@ public class AdminCategoryController {
     @PatchMapping("/{catId}")
     public CategoryDto updateCategory(@PathVariable int catId, @RequestBody CategoryDto newCategoryDto) {
         log.info("Updating category with id: {}", catId);
+        newCategoryDto.validate();
         CategoryDto categoryDto = categoryService.updateCategoryAdmin(catId, newCategoryDto);
         log.info("Category updated: {}", categoryDto);
         return categoryDto;

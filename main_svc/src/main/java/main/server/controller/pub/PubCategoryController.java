@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import main.server.dto.CategoryDto;
 import main.server.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,9 +18,10 @@ public class PubCategoryController {
         this.categoryService = categoryService;
     }
     @GetMapping
-    public List<CategoryDto> getCategories() {
+    public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") int from,
+                                          @RequestParam(defaultValue = "10") int size){
         log.info("Getting all categories");
-        List<CategoryDto> categories = categoryService.getCategoriesPub();
+        List<CategoryDto> categories = categoryService.getCategoriesPub(from, size);
         log.info("Categories found: {}", categories.size());
         return categories;
     }

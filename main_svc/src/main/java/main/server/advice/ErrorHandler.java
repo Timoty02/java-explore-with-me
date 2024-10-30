@@ -21,11 +21,6 @@ public class ErrorHandler {
         return new ApiError(new ArrayList<>(), e.getMessage(), "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR.name(), LocalDateTime.now().format(Event.DATE_TIME_FORMATTER));
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleExceptions(final JsonParseException e) {
-        return new ApiError(new ArrayList<>(), e.getMessage(), "Incorrectly made request.", HttpStatus.BAD_REQUEST.name(), LocalDateTime.now().format(Event.DATE_TIME_FORMATTER));
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

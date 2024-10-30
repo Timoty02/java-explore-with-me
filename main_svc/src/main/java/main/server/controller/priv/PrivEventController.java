@@ -3,11 +3,13 @@ package main.server.controller.priv;
 import lombok.extern.slf4j.Slf4j;
 import main.server.dto.EventRequestStatusUpdateResult;
 import main.server.dto.*;
+import main.server.exception.ConflictException;
 import main.server.service.EventService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -52,6 +54,9 @@ public class PrivEventController {
     public EventFullDto updateUserEventById(@PathVariable int userId, @PathVariable int eventId,
                                             @RequestBody UpdateEventUserRequest newEventDto) {
         log.info("updateUserEventById: userId={}, eventId={}, newEventDto={}", userId, eventId, newEventDto);
+        if (Objects.equals(eventService.getEventPriv(userId, eventId).getState(), "PUBLISHED")) {
+            throw new ConflictException("Event is published");
+        }
         newEventDto.validate();
         EventFullDto eventFullDto = eventService.updateEventPriv(userId, eventId, newEventDto);
         log.info("updateUserEventById: eventFullDto={}", eventFullDto);

@@ -1,9 +1,9 @@
 package main.server.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
-import main.server.dto.UpdateCompilationRequest;
 import main.server.dto.CompilationDto;
 import main.server.dto.NewCompilationDto;
+import main.server.dto.UpdateCompilationRequest;
 import main.server.service.CompilationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/compilations")
 public class AdminCompilationController {
     private final CompilationService compilationService;
+
     @Autowired
     public AdminCompilationController(CompilationService compilationService) {
         this.compilationService = compilationService;
@@ -20,7 +21,7 @@ public class AdminCompilationController {
 
     @PostMapping
     @ResponseStatus(code = org.springframework.http.HttpStatus.CREATED)
-    public CompilationDto createCompilation(@RequestBody NewCompilationDto  newCompilationDto) {
+    public CompilationDto createCompilation(@RequestBody NewCompilationDto newCompilationDto) {
         log.info("createCompilation:{}", newCompilationDto);
         newCompilationDto.validate();
         CompilationDto compilationDto = compilationService.addCompilationAdmin(newCompilationDto);

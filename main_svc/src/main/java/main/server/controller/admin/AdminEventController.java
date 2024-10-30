@@ -1,8 +1,8 @@
 package main.server.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
-import main.server.dto.UpdateEventAdminRequest;
 import main.server.dto.EventFullDto;
+import main.server.dto.UpdateEventAdminRequest;
 import main.server.service.EventService;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +32,7 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEvent(@PathVariable int eventId,@RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
+    public EventFullDto updateEvent(@PathVariable int eventId, @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("updateEvent");
         updateEventAdminRequest.validate();
         EventFullDto eventFullDto = eventService.updateEventAdmin(eventId, updateEventAdminRequest);

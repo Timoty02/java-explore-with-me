@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/categories")
 public class AdminCategoryController {
     private final CategoryService categoryService;
+
     @Autowired
     public AdminCategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;

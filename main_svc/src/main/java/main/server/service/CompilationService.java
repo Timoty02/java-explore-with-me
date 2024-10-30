@@ -3,9 +3,9 @@ package main.server.service;
 import lombok.extern.slf4j.Slf4j;
 import main.server.dao.Compilation;
 import main.server.dao.Event;
-import main.server.dto.UpdateCompilationRequest;
 import main.server.dto.CompilationDto;
 import main.server.dto.NewCompilationDto;
+import main.server.dto.UpdateCompilationRequest;
 import main.server.exception.ConflictException;
 import main.server.exception.NotFoundException;
 import main.server.mapper.CompilationMapper;
@@ -21,11 +21,13 @@ import java.util.List;
 public class CompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
+
     @Autowired
     public CompilationService(CompilationRepository compilationRepository, EventRepository eventRepository) {
         this.compilationRepository = compilationRepository;
         this.eventRepository = eventRepository;
     }
+
     public void deleteCompilationAdmin(int compId) {
         log.info("Deleting compilation with id: {}", compId);
         compilationRepository.findById(compId).orElseThrow(() ->

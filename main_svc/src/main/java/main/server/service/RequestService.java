@@ -25,6 +25,7 @@ public class RequestService {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
     }
+
     public List<ParticipationRequestDto> getRequests(int userId) {
         log.info("Getting requests for user: {}", userId);
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User with id=" + userId + " was not found"));
@@ -32,9 +33,10 @@ public class RequestService {
         log.info("Requests found: {}", requests);
         return requests.stream().map(RequestMapper::toDto).toList();
     }
+
     public ParticipationRequestDto cancelRequest(int userId, int requestId) {
         log.info("Cancelling request: {} for user: {}", requestId, userId);
-        Request request = requestRepository.findById(requestId).orElseThrow( () ->
+        Request request = requestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundException("Request with id=" + requestId + " was not found"));
         request.setStatus("CANCELED");
         Request requestUp = requestRepository.save(request);
@@ -45,21 +47,21 @@ public class RequestService {
     public ParticipationRequestDto addRequest(int userId, int eventId) {
         log.info("Adding request for event: {}, from user: {}", eventId, userId);
         Request request = new Request();
-        request.setEvent(eventRepository.findById((eventId)).orElseThrow( () ->
+        request.setEvent(eventRepository.findById((eventId)).orElseThrow(() ->
                 new NotFoundException("Event with id=" + eventId + " was not found")));
-        if  (!request.getEvent().getState().equals("PUBLISHED")) {
+        if (!request.getEvent().getState().equals("PUBLISHED")) {
             throw new ConflictException("Event is not PUBLISHED");
         }
-        if  (request.getEvent().getParticipantLimit() != 0 && request.getEvent().getParticipantLimit() <= request.getEvent().getConfirmedRequests()) {
+        if (request.getEvent().getParticipantLimit() != 0 && request.getEvent().getParticipantLimit() <= request.getEvent().getConfirmedRequests()) {
             throw new ConflictException("Participant limit has been reached");
         }
-        if  (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
+        if (requestRepository.existsByEventIdAndRequesterId(eventId, userId)) {
             throw new ConflictException("Request already exists");
         }
-        if  (request.getEvent().getInitiator().getId() == userId) {
+        if (request.getEvent().getInitiator().getId() == userId) {
             throw new ConflictException("Initiator cannot add request to own event");
         }
-        if  (request.getEvent().isRequestModeration() && request.getEvent().getParticipantLimit() != 0) {
+        if (request.getEvent().isRequestModeration() && request.getEvent().getParticipantLimit() != 0) {
             request.setStatus("PENDING");
         } else {
             request.setStatus("CONFIRMED");

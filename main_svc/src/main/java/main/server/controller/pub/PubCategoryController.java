@@ -13,13 +13,15 @@ import java.util.List;
 @RequestMapping("/categories")
 public class PubCategoryController {
     private final CategoryService categoryService;
+
     @Autowired
     public PubCategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
+
     @GetMapping
     public List<CategoryDto> getCategories(@RequestParam(defaultValue = "0") int from,
-                                          @RequestParam(defaultValue = "10") int size){
+                                           @RequestParam(defaultValue = "10") int size) {
         log.info("Getting all categories");
         List<CategoryDto> categories = categoryService.getCategoriesPub(from, size);
         log.info("Categories found: {}", categories.size());

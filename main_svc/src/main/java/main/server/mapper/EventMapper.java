@@ -26,7 +26,7 @@ public class EventMapper {
                 event.isRequestModeration(), event.getState(), event.getTitle(), event.getViews());
     }
 
-    public static EventShortDto toEventShortDto (Event event){
+    public static EventShortDto toEventShortDto(Event event) {
         return new EventShortDto(event.getAnnotation(), CategoryMapper.toCategoryDto(event.getCategory()),
                 event.getConfirmedRequests(), event.getEventDate().format(Event.DATE_TIME_FORMATTER), event.getId(), UserMapper.toUserShortDto(event.getInitiator()),
                 event.isPaid(), event.getTitle(), event.getViews());

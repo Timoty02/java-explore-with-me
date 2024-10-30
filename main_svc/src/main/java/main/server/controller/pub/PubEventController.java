@@ -17,10 +17,12 @@ import java.util.List;
 @RequestMapping("/events")
 public class PubEventController {
     private final EventService eventService;
+
     @Autowired
     public PubEventController(EventService eventService) {
         this.eventService = eventService;
     }
+
     @GetMapping
     public List<EventShortDto> getEvents(
             @RequestParam(required = false) String text,
@@ -35,7 +37,7 @@ public class PubEventController {
             HttpServletRequest request
     ) {
         log.info("getEvents");
-        if (rangeStart !=null && rangeEnd != null && LocalDateTime.parse(rangeStart, Event.DATE_TIME_FORMATTER).isAfter(LocalDateTime.parse(rangeEnd, Event.DATE_TIME_FORMATTER))) {
+        if (rangeStart != null && rangeEnd != null && LocalDateTime.parse(rangeStart, Event.DATE_TIME_FORMATTER).isAfter(LocalDateTime.parse(rangeEnd, Event.DATE_TIME_FORMATTER))) {
             log.info("getEvents: rangeStart is after rangeEnd");
             throw new IllegalArgumentException("rangeStart is after rangeEnd");
         }

@@ -51,6 +51,7 @@ public class CategoryService {
         }
         log.info("Category deleted with id: {}", catId);
     }
+
     public CategoryDto updateCategoryAdmin(int catId, CategoryDto newCategoryDto) {
         log.info("Updating category: {}", newCategoryDto);
         if (!categoryRepository.existsById(catId)) {
@@ -59,7 +60,7 @@ public class CategoryService {
         }
         Category category = CategoryMapper.toCategory(newCategoryDto);
         category.setId(catId);
-        try{
+        try {
             Category categoryUp = categoryRepository.save(category);
             log.info("Category updated: {}", categoryUp);
             return CategoryMapper.toCategoryDto(categoryUp);
@@ -75,9 +76,10 @@ public class CategoryService {
         log.info("Found {} categories", categories);
         return categories.stream().map(CategoryMapper::toCategoryDto).collect(Collectors.toList());
     }
+
     public CategoryDto getCategoryByIdPub(int catId) {
         log.info("Getting category with id: {}", catId);
-        Category category = categoryRepository.findById(catId).orElseThrow( () -> new NotFoundException("Category with id=" + catId +" was not found"));
+        Category category = categoryRepository.findById(catId).orElseThrow(() -> new NotFoundException("Category with id=" + catId + " was not found"));
         log.info("Found category: {}", category);
         return CategoryMapper.toCategoryDto(category);
     }

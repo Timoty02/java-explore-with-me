@@ -1,6 +1,5 @@
 package main.server.dto;
 
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,8 +18,8 @@ public class NewCompilationDto {
     boolean pinned;
     String title;
 
-    public void validate(){
-        if (title == null || title.isBlank() || title.length() > 50){
+    public void validate() {
+        if (title == null || title.isBlank() || title.length() > 50) {
             throw new IllegalArgumentException("Title is not valid");
         }
     }

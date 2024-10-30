@@ -1,6 +1,5 @@
 package main.server.dto;
 
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NewCategoryDto {
     String name;
 
-    public void validate(){
+    public void validate() {
         if (name == null || name.isBlank() || name.length() > 50) {
             throw new IllegalArgumentException("Name is not valid");
         }

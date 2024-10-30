@@ -1,7 +1,6 @@
 package main.server.controller.priv;
 
 import lombok.extern.slf4j.Slf4j;
-import main.server.dto.EventRequestStatusUpdateResult;
 import main.server.dto.*;
 import main.server.exception.ConflictException;
 import main.server.service.EventService;
@@ -36,7 +35,7 @@ public class PrivEventController {
     public EventFullDto addUserEvent(@PathVariable int userId, @RequestBody NewEventDto newEventDto) {
         log.info("addUserEvent: userId={}, newEventDto={}", userId, newEventDto);
         newEventDto.validate();
-        EventFullDto  eventFullDto = eventService.createEventPriv(userId, newEventDto);
+        EventFullDto eventFullDto = eventService.createEventPriv(userId, newEventDto);
         log.info("addUserEvent: eventFullDto={}", eventFullDto);
         return eventFullDto;
     }

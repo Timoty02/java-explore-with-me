@@ -1,7 +1,6 @@
 package main.server.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +17,8 @@ public class CategoryDto {
     int id;
     String name;
 
-    public void validate(){
-        if (name == null || name.isBlank() || name.length() > 50){
+    public void validate() {
+        if (name == null || name.isBlank() || name.length() > 50) {
             throw new IllegalArgumentException("Name is not valid");
         }
     }

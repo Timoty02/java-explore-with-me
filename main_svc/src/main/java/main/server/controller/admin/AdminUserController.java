@@ -14,10 +14,12 @@ import java.util.List;
 @RequestMapping("/admin/users")
 public class AdminUserController {
     private final UserService userService;
+
     @Autowired
     public AdminUserController(UserService userService) {
         this.userService = userService;
     }
+
     @GetMapping
     public List<UserDto> getUsers(@RequestParam(required = false) List<Integer> ids, @RequestParam(defaultValue = "0") int from,
                                   @RequestParam(defaultValue = "10") int size) {
@@ -30,7 +32,7 @@ public class AdminUserController {
     @PostMapping
     @ResponseStatus(code = org.springframework.http.HttpStatus.CREATED)
     public UserDto createUser(@RequestBody NewUserRequest request) {
-        log.info("createUser:{}",request);
+        log.info("createUser:{}", request);
         request.validate();
         UserDto userDto = userService.addUser(request);
         log.info("userDto:{}", userDto);

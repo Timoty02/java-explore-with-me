@@ -1,8 +1,8 @@
 package main.server.service;
 
 import lombok.extern.slf4j.Slf4j;
-import main.server.dto.NewUserRequest;
 import main.server.dao.User;
+import main.server.dto.NewUserRequest;
 import main.server.dto.UserDto;
 import main.server.exception.ConflictException;
 import main.server.exception.NotFoundException;
@@ -18,10 +18,12 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
     public UserDto addUser(NewUserRequest request) {
         log.info("addUser: {}", request);
         User user = new User();

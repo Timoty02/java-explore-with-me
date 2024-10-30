@@ -13,6 +13,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class PrivRequestController {
     private final RequestService requestService;
+
     @Autowired
     public PrivRequestController(RequestService requestService) {
         this.requestService = requestService;

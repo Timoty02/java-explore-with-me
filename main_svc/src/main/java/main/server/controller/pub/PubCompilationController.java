@@ -13,6 +13,7 @@ import java.util.List;
 @RequestMapping("/compilations")
 public class PubCompilationController {
     private final CompilationService compilationService;
+
     @Autowired
     public PubCompilationController(CompilationService compilationService) {
         this.compilationService = compilationService;

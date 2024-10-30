@@ -17,7 +17,7 @@ public class NewUserRequest {
 
     public void validate() {
         if (email == null || email.isEmpty() || email.isBlank() || !email.contains("@") || email.length() < 6
-                || email.length() > 254 || !email.matches("^(?=.{1,64}@)([a-zA-Z0-9._%+-]{1,64})@([a-zA-Z0-9.-]{1,63})\\.(.+)$") ) {
+                || email.length() > 254 || !email.matches("^(?=.{1,64}@)([a-zA-Z0-9._%+-]{1,64})@([a-zA-Z0-9.-]{1,63})\\.(.+)$")) {
             throw new IllegalArgumentException("Email is not valid");
         }
         if (name == null || name.isEmpty() || name.isBlank() || name.length() < 2 || name.length() > 250) {

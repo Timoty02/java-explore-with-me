@@ -6,9 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import main.server.dto.EventShortDto;
 
 import java.util.List;
+
 @Slf4j
 @Data
 @NoArgsConstructor

@@ -18,8 +18,8 @@ public class UpdateCompilationRequest {
     Boolean pinned;
     String title;
 
-    public void validate(){
-        if (title != null && title.length() > 50){
+    public void validate() {
+        if (title != null && title.length() > 50) {
             throw new IllegalArgumentException("Title is not valid");
         }
     }

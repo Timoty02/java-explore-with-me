@@ -28,7 +28,7 @@ public class AdminCategoryController {
         return categoryDto;
     }
 
-    @DeleteMapping("/{cat-Id}")
+    @DeleteMapping("/{cat-id}")
     @ResponseStatus(code = org.springframework.http.HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable("cat-id") int catId) {
         log.info("Deleting category with id: {}", catId);

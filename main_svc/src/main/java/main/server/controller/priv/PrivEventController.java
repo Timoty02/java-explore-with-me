@@ -34,6 +34,7 @@ public class PrivEventController {
     @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
     public EventFullDto addUserEvent(@PathVariable int userId, @RequestBody NewEventDto newEventDto) {
         log.info("addUserEvent: userId={}, newEventDto={}", userId, newEventDto);
+        newEventDto.validate();
         EventFullDto  eventFullDto = eventService.createEventPriv(userId, newEventDto);
         log.info("addUserEvent: eventFullDto={}", eventFullDto);
         return eventFullDto;
@@ -52,6 +53,7 @@ public class PrivEventController {
     public EventFullDto updateUserEventById(@PathVariable int userId, @PathVariable int eventId,
                                             @RequestBody UpdateEventUserRequest newEventDto) {
         log.info("updateUserEventById: userId={}, eventId={}, newEventDto={}", userId, eventId, newEventDto);
+        newEventDto.validate();
         EventFullDto eventFullDto = eventService.updateEventPriv(userId, eventId, newEventDto);
         log.info("updateUserEventById: eventFullDto={}", eventFullDto);
         return eventFullDto;

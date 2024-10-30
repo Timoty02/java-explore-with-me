@@ -39,7 +39,7 @@ public class UpdateEventUserRequest {
         this.stateAction = stateAction;
         this.title = title;
     }
-    private void validate() {
+    public void validate() {
         if (participantLimit != null && participantLimit < 0) {
             throw new IllegalArgumentException("Participant limit must be positive");
         }

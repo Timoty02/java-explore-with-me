@@ -14,7 +14,7 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
-  stat_svc:
+  stat-svc:
     build: stat_svc
     image: explore-with-me-stat_svc
     container_name: explore-with-me-stat_svc
@@ -44,13 +44,14 @@ services:
       interval: 5s
       retries: 10
 
-  main_svc:
+  main-svc:
     build: main_svc
     image: explore-with-me-main_svc
     container_name: explore-with-me-main_svc
     ports:
       - "8080:8080"
     environment:
+      - EXPLORE_WITH_ME_STAT_SVC_URL=http://stat-svc:9090
       - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/main_svc
       - SPRING_DATASOURCE_USERNAME=main_svc
       - SPRING_DATASOURCE_PASSWORD=main_svc

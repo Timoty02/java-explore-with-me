@@ -28,7 +28,7 @@ public class NewEventDto {
     boolean requestModeration;
     String title;
 
-    public NewEventDto(String annotation, int category, String description, String eventDate, Location location, boolean paid, int participantLimit, boolean requestModeration, String title) {
+    public NewEventDto(String annotation, int category, String description, String eventDate, Location location, boolean paid, int participantLimit, boolean requestModeration, String title){
         this.annotation = annotation;
         this.category = category;
         this.description = description;
@@ -38,15 +38,24 @@ public class NewEventDto {
         this.participantLimit = participantLimit;
         this.requestModeration = requestModeration;
         this.title = title;
-        validate();
     }
-    private void validate() {
+
+    public void validate() throws IllegalArgumentException {
+        validateAnnotation();
+        validateDescription();
+        validateParticipantLimit();
+    }
+    private void validateAnnotation() throws IllegalArgumentException {
         if (annotation == null || annotation.isBlank()) {
             throw new IllegalArgumentException("Annotation is required");
         }
+    }
+    private void validateDescription() throws IllegalArgumentException {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("Description is required");
         }
+    }
+    private void validateParticipantLimit() throws IllegalArgumentException {
         if (participantLimit < 0) {
             throw new IllegalArgumentException("Participant limit must be non-negative");
         }

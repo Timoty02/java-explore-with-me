@@ -4,6 +4,7 @@ import main.server.dao.Event;
 import main.server.dto.ApiError;
 import main.server.exception.ConflictException;
 import main.server.exception.NotFoundException;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -13,12 +14,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "main.server")
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleExceptions(final RuntimeException e) {
         return new ApiError(new ArrayList<>(),e.getMessage(), "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR.name(), LocalDateTime.now().format(Event.DATE_TIME_FORMATTER));
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleExceptions(final JsonParseException e) {
+        return new ApiError(new ArrayList<>(), e.getMessage(), "Incorrectly made request.", HttpStatus.BAD_REQUEST.name(), LocalDateTime.now().format(Event.DATE_TIME_FORMATTER));
     }
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -1,5 +1,6 @@
 package main.server.controller.pub;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import main.server.dto.EventFullDto;
 import main.server.dto.EventShortDto;
@@ -28,15 +29,19 @@ public class PubEventController {
             @RequestParam(required = false) Boolean onlyAvailable,
             @RequestParam(required = false) String sort,
             @RequestParam(defaultValue = "0") int from,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request
     ) {
         log.info("getEvents");
-        return eventService.getEventsPub(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        List<EventShortDto> eventShortDtoList = eventService.getEventsPub(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
+
+        log.info("getEvents: eventShortDtoList={}", eventShortDtoList);
+        return eventShortDtoList;
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEventById(@PathVariable int id) {
+    public EventFullDto getEventById(@PathVariable int id, HttpServletRequest request) {
         log.info("getEventById");
-        return eventService.getEventByIdPub(id);
+        return eventService.getEventByIdPub(id, request);
     }
 }

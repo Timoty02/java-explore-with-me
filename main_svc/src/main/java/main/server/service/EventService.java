@@ -1,5 +1,9 @@
 package main.server.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dto.ViewStats;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import main.server.dao.*;
 import main.server.dto.*;
@@ -12,9 +16,15 @@ import main.server.repository.EventRepository;
 import main.server.repository.RequestRepository;
 import main.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import stat.client.StatClient;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Slf4j
@@ -24,18 +34,32 @@ public class EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository  requestRepository;
+    private final StatClient statClient;
     @Autowired
     public EventService(EventRepository eventRepository,
-                        UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository) {
+                        UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository, StatClient statClient) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.requestRepository = requestRepository;
+        this.statClient = statClient;
     }
-    public EventFullDto  getEventByIdPub(int eventId) {
+    public EventFullDto  getEventByIdPub(int eventId, HttpServletRequest request) {
         log.info("getEvent: {}", eventId);
         Event event = eventRepository.findById(eventId).orElseThrow( () -> new NotFoundException("Event with id=" + eventId + " was not found"));
+        if (!event.getState().equals("PUBLISHED")) {
+            throw new NotFoundException("Event with id=" + eventId + " was not found");
+        }
         log.info("gotEvent: {}", event);
+        ResponseEntity<Object> stats = statClient.stats(event.getPublishedOn().format(Event.DATE_TIME_FORMATTER), LocalDateTime.now().format(Event.DATE_TIME_FORMATTER), new String[]{"/events/" + eventId}, true);
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<ViewStats> viewStats = objectMapper.convertValue(stats.getBody(), new TypeReference<List<ViewStats>>() {});
+        if (viewStats == null) {
+            throw new NotFoundException("Event with id=" + eventId + " was not found");
+        }
+        event.setViews(viewStats.getFirst().getHits());
+        eventRepository.save(event);
+        statClient.hit("ewm-main-service", "/events/" + eventId, request.getRemoteAddr(),LocalDateTime.now().format(Event.DATE_TIME_FORMATTER));
         return EventMapper.toEventFullDto(event);
     }
     public List<EventShortDto> getEventsPriv(int userId, int from, int size){
@@ -184,7 +208,7 @@ public class EventService {
     }
     public List<EventShortDto> getEventsPub(String text, List<Integer> categories, Boolean paid,
                                         String rangeStart, String rangeEnd, Boolean onlyAvailable,
-                                        String sort, int from, int size) {
+                                        String sort, int from, int size, HttpServletRequest request) {
         log.info("getEvents: text={}, categories={}, paid={}, rangeStart={}, rangeEnd={}, onlyAvailable={}, sort={}, from={}, size={}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         List<Event> events = eventRepository.findAll().stream()
@@ -209,6 +233,7 @@ public class EventService {
                 })
                 .toList();
         log.info("gotEvents: {}", events);
+        statClient.hit("ewm-main-service", "/events", request.getRemoteAddr(),LocalDateTime.now().format(Event.DATE_TIME_FORMATTER));
         return events.stream().map(EventMapper::toEventShortDto).toList();
     }
 

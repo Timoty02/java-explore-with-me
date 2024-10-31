@@ -1,31 +1,53 @@
+version: '3.8'
 services:
-  stat_svc:
-    build: stat_svc
-    image: explore-with-me-stat_svc
-    container_name: explore-with-me-stat_svc
+  stats-server:
+    build: ./stat_svc
+    image: stats-server-image
+    container_name: stats-server-container
     ports:
       - "9090:9090"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stat_svc
-      - SPRING_DATASOURCE_USERNAME=stat_svc
-      - SPRING_DATASOURCE_PASSWORD=stat_svc
-      - TZ=Europe/Moscow
     depends_on:
       - stats-db
+    environment:
+      - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/exploreWM
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+  #        - TZ=Europe/Moscow
 
   stats-db:
     image: postgres:16.1
-    container_name: postgres
+    container_name: stats-db-container
     ports:
-      - "6541:5432"
+      - 6541:5432
     environment:
-      - POSTGRES_PASSWORD=stat_svc
-      - POSTGRES_USER=stat_svc
-      - POSTGRES_DB=stat_svc
-      - TZ=Europe/Moscow
-    healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
-      interval: 5s
-      retries: 10
+      - POSTGRES_DB=exploreWM
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
 
+  ewm-service:
+    build: ./main_svc
+    image: main-service-image
+    container_name: main-service-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+      - stats-server
+    environment:
+      - STATS_SERVER_URL=http://stats-server:9090
+      - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/exploreMAIN
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+  #      - TZ=Europe/Moscow
+
+  ewm-db:
+    image: postgres:16.1
+    container_name: ewm-db-container
+    ports:
+      - 6542:5432
+    environment:
+      - POSTGRES_DB=exploreMAIN
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root

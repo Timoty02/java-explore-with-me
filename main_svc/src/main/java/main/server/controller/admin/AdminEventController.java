@@ -1,9 +1,12 @@
 package main.server.controller.admin;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import main.server.dto.EventFullDto;
 import main.server.dto.UpdateEventAdminRequest;
+import main.server.service.CommentService;
 import main.server.service.EventService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +17,11 @@ import java.util.List;
 public class AdminEventController {
 
     private final EventService eventService;
-
-    public AdminEventController(EventService eventService) {
+    private final CommentService commentService;
+    @Autowired
+    public AdminEventController(EventService eventService, CommentService commentService) {
         this.eventService = eventService;
+        this.commentService = commentService;
     }
 
     @GetMapping
@@ -38,5 +43,17 @@ public class AdminEventController {
         EventFullDto eventFullDto = eventService.updateEventAdmin(eventId, updateEventAdminRequest);
         log.info("updatedEvent: {}", eventFullDto);
         return eventFullDto;
+    }
+    @DeleteMapping("/{event-id}/comments/{comment-id}")
+    public void deleteComment(@PathVariable("event-id") int eventId, @PathVariable("comment-id") int commentId) {
+        log.info("deleteComment with id:{}", commentId);
+        commentService.deleteCommentAdmin(commentId);
+        log.info("deletedComment");
+    }
+    @GetMapping("/{event-id}/comments/{comment-id}")
+    public void getComment(@PathVariable("event-id") int eventId, @PathVariable("comment-id") int commentId) {
+        log.info("getComment with id:{}", commentId);
+        commentService.getCommentByIdAdmin(commentId);
+        log.info("gotComment");
     }
 }

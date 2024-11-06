@@ -18,6 +18,7 @@ public class AdminEventController {
 
     private final EventService eventService;
     private final CommentService commentService;
+    private final String commentPath = "/{event-id}/comments/{comment-id}";
 
     @Autowired
     public AdminEventController(EventService eventService, CommentService commentService) {
@@ -46,19 +47,19 @@ public class AdminEventController {
         return eventFullDto;
     }
 
-    @DeleteMapping("/{event-id}/comments/{comment-id}")
+    @DeleteMapping(commentPath)
     @ResponseStatus(code = org.springframework.http.HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable("event-id") int eventId, @PathVariable("comment-id") int commentId) {
         log.info("deleteComment with id:{}", commentId);
         commentService.deleteCommentAdmin(commentId);
-        log.info("deletedComment");
+        log.info("deletedComment with id:{}", commentId);
     }
 
-    @GetMapping("/{event-id}/comments/{comment-id}")
+    @GetMapping(commentPath)
     public CommentDto getComment(@PathVariable("event-id") int eventId, @PathVariable("comment-id") int commentId) {
         log.info("getComment with id:{}", commentId);
         CommentDto commentDto = commentService.getCommentByIdAdmin(commentId);
-        log.info("gotComment");
+        log.info("gotComment: {}", commentDto);
         return commentDto;
     }
 }

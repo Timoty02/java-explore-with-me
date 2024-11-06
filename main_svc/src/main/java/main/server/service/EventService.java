@@ -9,12 +9,10 @@ import main.server.dao.*;
 import main.server.dto.*;
 import main.server.exception.ConflictException;
 import main.server.exception.NotFoundException;
+import main.server.mapper.CommentMapper;
 import main.server.mapper.EventMapper;
 import main.server.mapper.RequestMapper;
-import main.server.repository.CategoryRepository;
-import main.server.repository.EventRepository;
-import main.server.repository.RequestRepository;
-import main.server.repository.UserRepository;
+import main.server.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,15 +28,17 @@ public class EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
+    private final CommentRepository commentRepository;
     private final StatClient statClient;
 
     @Autowired
     public EventService(EventRepository eventRepository,
-                        UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository, StatClient statClient) {
+                        UserRepository userRepository, CategoryRepository categoryRepository, RequestRepository requestRepository, CommentRepository commentRepository, StatClient statClient) {
         this.eventRepository = eventRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.requestRepository = requestRepository;
+        this.commentRepository = commentRepository;
         this.statClient = statClient;
     }
 
@@ -59,7 +59,12 @@ public class EventService {
         event.setViews(viewStats.getFirst().getHits());
         eventRepository.save(event);
         statClient.hit("ewm-main-service", "/events/" + eventId, request.getRemoteAddr(), LocalDateTime.now().format(Event.DATE_TIME_FORMATTER));
-        return EventMapper.toEventFullDto(event);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        List<Comment> comments = commentRepository.findAllByEventIdAndStatusIn(eventId, List.of("PUBLISHED", "UPDATED"));
+        if  (!comments.isEmpty()) {
+            eventFullDto.setComments(comments.stream().map(CommentMapper::toCommentDto).toList());
+        }
+        return eventFullDto;
     }
 
     public List<EventShortDto> getEventsPriv(int userId, int from, int size) {
@@ -94,7 +99,12 @@ public class EventService {
         log.info("getEvent: {}", eventId);
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
         log.info("gotEvent: {}", event);
-        return EventMapper.toEventFullDto(event);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        List<Comment> comments = commentRepository.findAllByEventIdAndStatusIn(eventId, List.of("PUBLISHED", "UPDATED"));
+        if  (!comments.isEmpty()) {
+            eventFullDto.setComments(comments.stream().map(CommentMapper::toCommentDto).toList());
+        }
+        return eventFullDto;
     }
 
     public EventFullDto updateEventPriv(int userId, int eventId, UpdateEventUserRequest updateEventUserRequest) {

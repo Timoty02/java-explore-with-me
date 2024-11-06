@@ -100,4 +100,21 @@ public class PrivEventController {
         log.info("updateUserEventComment: commentDto={}", commentDto);
         return commentDto;
     }
+    @DeleteMapping("/{user-id}/events/{event-id}/comments/{comment-id}")
+    @ResponseStatus(code = org.springframework.http.HttpStatus.NO_CONTENT)
+    public void deleteUserEventComment(@PathVariable("user-id") int userId, @PathVariable("event-id") int eventId,
+                                       @PathVariable("comment-id") int commentId) {
+        log.info("deleteUserEventComment: userId={}, eventId={}, commentId={}", userId, eventId, commentId);
+        commentService.deleteCommentPrivate(commentId, userId);
+        log.info("deleteUserEventComment");
+    }
+    @PostMapping("/{user-id}/events/{event-id}/comments/{comment-id}")
+    @ResponseStatus(org.springframework.http.HttpStatus.CREATED)
+    public CommentDto addCommentRate(@PathVariable("user-id") int userId, @PathVariable("event-id") int eventId,
+                                               @PathVariable("comment-id") int commentId, @RequestParam String rate) {
+        log.info("addUserEventCommentReply: userId={}, eventId={}, commentId={}, rate={}", userId, eventId, commentId, rate);
+        CommentDto commentDto = commentService.rateComment(commentId, userId, rate);
+        log.info("addUserEventCommentReplyRate: {}", rate);
+        return commentDto;
+    }
 }

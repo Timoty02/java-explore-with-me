@@ -68,11 +68,12 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
         return CommentMapper.toCommentDto(savedComment);
     }
+    @Deprecated
     public List<CommentDto> getCommentsByEventPub (int eventId) {
         List<Comment> comments = commentRepository.findAllByEventIdAndStatusIn(eventId,List.of( "PUBLISHED","UPDATED"));
         return comments.stream().map(CommentMapper::toCommentDto).toList();
     }
-    public void rateComment(int commentId, int userId, String rating) {
+    public CommentDto rateComment(int commentId, int userId, String rating) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(()->new NotFoundException("Comment not found"));
         if (comment.getStatus().equals("DELETED")) {
             throw new ConflictException("Comment is deleted");
@@ -84,6 +85,7 @@ public class CommentService {
         } else {
             throw new ConflictException("Rating must be PLUS or MINUS");
         }
-        commentRepository.save(comment);
+        Comment commentUp = commentRepository.save(comment);
+        return CommentMapper.toCommentDto(commentUp);
     }
 }

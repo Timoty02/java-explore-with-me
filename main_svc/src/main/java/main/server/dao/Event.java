@@ -7,12 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.persistence.CascadeType;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Slf4j
 @Data
@@ -48,9 +44,6 @@ public class Event {
     String state;
     String title;
     int views;
-    @OneToMany
-    @JoinTable(name = "")
-    List<Comment> comments= new ArrayList<>();
 
     public Event(String annotation, String description, String eventDate, float lat, float lng, boolean paid,
                  int participantLimit, boolean requestModeration, String title) {

@@ -2,6 +2,7 @@ package main.server.controller.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import main.server.dto.CommentDto;
 import main.server.dto.EventFullDto;
 import main.server.dto.UpdateEventAdminRequest;
 import main.server.service.CommentService;
@@ -45,15 +46,17 @@ public class AdminEventController {
         return eventFullDto;
     }
     @DeleteMapping("/{event-id}/comments/{comment-id}")
+    @ResponseStatus(code = org.springframework.http.HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable("event-id") int eventId, @PathVariable("comment-id") int commentId) {
         log.info("deleteComment with id:{}", commentId);
         commentService.deleteCommentAdmin(commentId);
         log.info("deletedComment");
     }
     @GetMapping("/{event-id}/comments/{comment-id}")
-    public void getComment(@PathVariable("event-id") int eventId, @PathVariable("comment-id") int commentId) {
+    public CommentDto getComment(@PathVariable("event-id") int eventId, @PathVariable("comment-id") int commentId) {
         log.info("getComment with id:{}", commentId);
-        commentService.getCommentByIdAdmin(commentId);
+        CommentDto commentDto = commentService.getCommentByIdAdmin(commentId);
         log.info("gotComment");
+        return commentDto;
     }
 }

@@ -61,7 +61,7 @@ public class EventService {
         statClient.hit("ewm-main-service", "/events/" + eventId, request.getRemoteAddr(), LocalDateTime.now().format(Event.DATE_TIME_FORMATTER));
         EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
         List<Comment> comments = commentRepository.findAllByEventIdAndStatusIn(eventId, List.of("PUBLISHED", "UPDATED"));
-        if  (!comments.isEmpty()) {
+        if (!comments.isEmpty()) {
             eventFullDto.setComments(comments.stream().map(CommentMapper::toCommentDto).toList());
         }
         return eventFullDto;
@@ -101,7 +101,7 @@ public class EventService {
         log.info("gotEvent: {}", event);
         EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
         List<Comment> comments = commentRepository.findAllByEventIdAndStatusIn(eventId, List.of("PUBLISHED", "UPDATED"));
-        if  (!comments.isEmpty()) {
+        if (!comments.isEmpty()) {
             eventFullDto.setComments(comments.stream().map(CommentMapper::toCommentDto).toList());
         }
         return eventFullDto;

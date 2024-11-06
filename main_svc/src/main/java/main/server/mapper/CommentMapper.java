@@ -18,6 +18,7 @@ public class CommentMapper {
         commentDto.setRating(comment.getRating());
         return commentDto;
     }
+
     public static Comment toComment(NewCommentDto commentDto) {
         Comment comment = new Comment();
         comment.setText(commentDto.getText());
